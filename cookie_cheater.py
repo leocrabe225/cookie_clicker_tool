@@ -3,12 +3,22 @@ from tkinter import *
 class cookies_info():
     def __init__(self):
         self.initial_price = [15,100,1100,12000,130000,1400000,20000000,330000000,5100000000,75000000000,1000000000000,14000000000000,170000000000000,2100000000000000]
+        self.initial_cps = [0.1,1,8,47,260,1400,7800,44000,260000,1600000,10000000,65000000,430000000,2900000000]
+        self.multiplier = 4.71
+        self.upgrades = [1,2**18,64,64,32,32,16,16,16,8,8,4,4,1]
+        self.grandma_upgrades = 10
         self.actual_price = []
+
         self.retrieve("test.cki")
-        self.cps = [282044,58125,2361,9604,45259,111255,584433,3472000,10049000,59804000,370523000,1022000000,3424000000, 11600000000]
+        self.cps = []
         self.names = ["Cursor", "Grandma", "Farm", "Mine", "Factory", "Bank", "Temple", "Wizard tower", "Shipment", "Alchemy", "Portal", "Time machine", "Antimatter condenser", "Prism"]
         for loop in range(len(self.initial_price)):
             self.actual_price.append(self.initial_price[loop] * (1.15 ** self.owned[loop]))
+        for loop in range(len(self.initial_cps)):
+            self.cps.append(self.initial_cps[loop] * self.multiplier * self.upgrades[loop])
+            if (loop >= 2 and loop <= self.grandma_upgrades + 1):
+                self.cps[loop] *= (self.owned[1] / (loop - 1)) / 100 + 1
+            print(self.names[loop], self.cps[loop])
 
     def get_next_buy(self):
         best = self.actual_price[0] / self.cps[0]
@@ -36,7 +46,8 @@ class cookies_info():
 
     def retrieve(self, filename):
         f = open(filename, "r")
-        strs = f.read().split(",")
+        readable = f.read()
+        strs = readable.split("\n")[0].split(",")
         self.owned = []
         for number in strs:
             self.owned.append(int(number))
